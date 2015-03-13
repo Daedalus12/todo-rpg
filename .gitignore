@@ -5,6 +5,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Sensitive
+config.json
+
 # Distribution / packaging
 .Python
 env/
@@ -19,6 +22,7 @@ parts/
 sdist/
 var/
 *.egg-info/
+.idea
 .installed.cfg
 *.egg
 

@@ -1,0 +1,3 @@
+[submodule "pyhabit"]
+	path = pyhabit
+	url = https://github.com/Daedalus12/pyhabit.git
