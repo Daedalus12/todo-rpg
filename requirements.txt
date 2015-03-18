@@ -1,0 +1,4 @@
+DateTime==4.0.1
+pytodoist==1.0.0
+requests==2.5.3
+virtualenv==1.11.6
