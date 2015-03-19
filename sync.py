@@ -1,5 +1,9 @@
+import os, sys
+sys.path.append(os.path.join(".", "pyhabit"))
+sys.path.append(os.path.join(".", "pytodoist"))
+
 from pytodoist import todoist
-from pyhabit.pyhabit.api import HabitAPI
+from pyhabit.api import HabitAPI
 
 from datetime import date, timedelta
 import os
@@ -23,29 +27,29 @@ def check_if_habitrpg_task_exists(habit_api, task_id):
         return True
 
 
-if __name__ == "__main__":
 
+def sync():
     todoist_user = todoist.login(os.environ.get('TODOIST_USERNAME'),
                                  os.environ.get('TODOIST_PASSWORD'))
 
-    habitapi = HabitAPI(os.environ.get('HABITRPG_USER_ID'),
+    habit_api = HabitAPI(os.environ.get('HABITRPG_USER_ID'),
                         os.environ.get('HABITRPG_API_TOKEN'))
 
     print "TODOIST UNCOMPLETED TASKS:"
     tasks = get_uncompleted_tasks_due_today(todoist_user)
     for t in tasks:
         print "\t", t.id, t.content
-        if check_if_habitrpg_task_exists(habitapi, t.id):
+        if check_if_habitrpg_task_exists(habit_api, t.id):
             print "\tHabitRPG task already exists; checking if complete"
-            response = habitapi.task(t.id)
-            if response['completed']:
+            resp  = habit_api.task(t.id)
+            if resp['completed']:
                 print "\t\tCompleting Todoist task"
                 t.complete()
             else:
                 print "\t\tTodoist task and HabitRPG task both incomplete"
         else:
             print "\tCreating newHabitRPG task"
-            habitapi.create_task(habitapi.TYPE_TODO,
+            habit_api.create_task(habit_api.TYPE_TODO,
                                  t.content,
                                  t.id,
                                  completed=False)
@@ -54,12 +58,12 @@ if __name__ == "__main__":
     tasks = get_todoist_tasks_completed_in_last_week(todoist_user)
     for t in tasks:
         print "\t", t.id, t.content
-        if check_if_habitrpg_task_exists(habitapi, t.id):
+        if check_if_habitrpg_task_exists(habit_api, t.id):
             print "\tHabitRPG task already exists; checking if complete"
-            response = habitapi.task(t.id)
+            response = habit_api.task(t.id)
             if not response['completed']:
                 print "\t\tHabitRPG task uncompleted but Todoist task " \
                       "completed; completing HabitRPG task"
-                habitapi.perform_task(t.id, 'up')
+                habit_api.perform_task(t.id, 'up')
             else:
                 print "\t\tHabitRPG task is also complete"
