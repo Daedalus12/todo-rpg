@@ -1,3 +1,4 @@
 DateTime==4.0.1
 requests==2.5.3
-virtualenv==1.11.6
+-e git://github.com/Daedalus12/pytodoist.git#egg=pytodoist
+-e git://github.com/Daedalus12/pyhabit.git#egg=pyhabit

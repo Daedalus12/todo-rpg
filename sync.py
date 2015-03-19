@@ -1,12 +1,8 @@
-import os, sys
-sys.path.append(os.path.join(".", "pyhabit"))
-sys.path.append(os.path.join(".", "pytodoist"))
+import os
+from datetime import date, timedelta
 
 from pytodoist import todoist
 from pyhabit.api import HabitAPI
-
-from datetime import date, timedelta
-import os
 
 
 def get_uncompleted_tasks_due_today(user):
@@ -27,13 +23,12 @@ def check_if_habitrpg_task_exists(habit_api, task_id):
         return True
 
 
-
 def sync():
     todoist_user = todoist.login(os.environ.get('TODOIST_USERNAME'),
                                  os.environ.get('TODOIST_PASSWORD'))
 
     habit_api = HabitAPI(os.environ.get('HABITRPG_USER_ID'),
-                        os.environ.get('HABITRPG_API_TOKEN'))
+                         os.environ.get('HABITRPG_API_TOKEN'))
 
     print "TODOIST UNCOMPLETED TASKS:"
     tasks = get_uncompleted_tasks_due_today(todoist_user)
@@ -41,7 +36,7 @@ def sync():
         print "\t", t.id, t.content
         if check_if_habitrpg_task_exists(habit_api, t.id):
             print "\tHabitRPG task already exists; checking if complete"
-            resp  = habit_api.task(t.id)
+            resp = habit_api.task(t.id)
             if resp['completed']:
                 print "\t\tCompleting Todoist task"
                 t.complete()
@@ -50,9 +45,9 @@ def sync():
         else:
             print "\tCreating newHabitRPG task"
             habit_api.create_task(habit_api.TYPE_TODO,
-                                 t.content,
-                                 t.id,
-                                 completed=False)
+                                  t.content,
+                                  t.id,
+                                  completed=False)
 
     print "TODOIST COMPLETED TASKS:"
     tasks = get_todoist_tasks_completed_in_last_week(todoist_user)
