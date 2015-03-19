@@ -6,7 +6,7 @@ __pycache__/
 *.so
 
 # Sensitive
-config.json
+.env
 
 # Distribution / packaging
 .Python

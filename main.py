@@ -2,7 +2,7 @@ from pytodoist import todoist
 from pyhabit.pyhabit.api import HabitAPI
 
 from datetime import date, timedelta
-import auth
+import os
 
 
 def get_uncompleted_tasks_due_today(user):
@@ -15,20 +15,21 @@ def get_todoist_tasks_completed_in_last_week(user):
     return user.search_completed_tasks(from_date=d.strftime("%Y-%m-%dT:23:59"))
 
 
-def check_if_habitrpg_task_exists(habitapi, task_id):
-    response = habitapi.task(task_id)
-    try:
-        message = response['err']
+def check_if_habitrpg_task_exists(habit_api, task_id):
+    resp = habit_api.task(task_id)
+    if 'err' in resp:
         return False
-    except KeyError:
+    else:
         return True
 
 
 if __name__ == "__main__":
-    a = auth.Auth()
-    todoist_user = todoist.login(a.todoist_username, a.todoist_password)
 
-    habitapi = HabitAPI(a.hrpg_user_id, a.hrpg_token)
+    todoist_user = todoist.login(os.environ.get('TODOIST_USERNAME'),
+                                 os.environ.get('TODOIST_PASSWORD'))
+
+    habitapi = HabitAPI(os.environ.get('HABITRPG_USER_ID'),
+                        os.environ.get('HABITRPG_API_TOKEN'))
 
     print "TODOIST UNCOMPLETED TASKS:"
     tasks = get_uncompleted_tasks_due_today(todoist_user)
@@ -57,7 +58,8 @@ if __name__ == "__main__":
             print "\tHabitRPG task already exists; checking if complete"
             response = habitapi.task(t.id)
             if not response['completed']:
-                print "\t\tHabitRPG task uncompleted but Todoist task completed; completing HabitRPG task"
+                print "\t\tHabitRPG task uncompleted but Todoist task " \
+                      "completed; completing HabitRPG task"
                 habitapi.perform_task(t.id, 'up')
             else:
                 print "\t\tHabitRPG task is also complete"
